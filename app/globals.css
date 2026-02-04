@@ -124,3 +124,10 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Print styles for report export */
+@media print {
+  body * { visibility: hidden !important; }
+  [data-print="report"], [data-print="report"] * { visibility: visible !important; }
+  [data-print="report"] { position: absolute; inset: 0; margin: 0; padding: 0.5in; }
+}

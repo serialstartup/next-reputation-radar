@@ -1,0 +1,365 @@
+import type {
+  Source,
+  Review,
+  Cluster,
+  Action,
+  Competitor,
+  KPI,
+  SentimentDataPoint,
+  NotificationSettings,
+  WeeklyReport,
+} from "./types"
+
+// ── KPIs ──────────────────────────────────────────────
+export const mockKPIs: KPI[] = [
+  { label: "Avg Rating", value: "4.2", change: 0.3, changeLabel: "vs last month" },
+  { label: "Total Reviews", value: 1284, change: 12, changeLabel: "new this week" },
+  { label: "Negative Trend", value: "18%", change: -3, changeLabel: "vs last month" },
+  { label: "Unanswered", value: 23, change: 5, changeLabel: "need attention" },
+]
+
+// ── Sources ───────────────────────────────────────────
+export const mockSources: Source[] = [
+  {
+    id: "src-1",
+    platform: "google",
+    url: "https://maps.google.com/place/acme-cafe",
+    name: "Acme Café – Google Business",
+    connected_at: "2025-12-01",
+    review_count: 847,
+    avg_rating: 4.3,
+    status: "active",
+  },
+  {
+    id: "src-2",
+    platform: "instagram",
+    url: "https://instagram.com/acmecafe",
+    name: "@acmecafe – Instagram",
+    connected_at: "2025-12-15",
+    review_count: 312,
+    avg_rating: 4.1,
+    status: "active",
+  },
+  {
+    id: "src-3",
+    platform: "yelp",
+    url: "https://yelp.com/biz/acme-cafe",
+    name: "Acme Café – Yelp",
+    connected_at: "2026-01-05",
+    review_count: 125,
+    avg_rating: 3.9,
+    status: "syncing",
+  },
+]
+
+// ── Reviews ───────────────────────────────────────────
+export const mockReviews: Review[] = [
+  {
+    id: "rev-1",
+    source_id: "src-1",
+    platform: "google",
+    author: "Sarah M.",
+    rating: 5,
+    text: "Absolutely love this place! The coffee is always fresh and the staff is incredibly friendly. Best latte in town.",
+    date: "2026-01-28",
+    sentiment: "positive",
+    replied: true,
+    reply_text: "Thank you Sarah! We're so glad you enjoy our lattes.",
+    topics: ["coffee quality", "staff"],
+  },
+  {
+    id: "rev-2",
+    source_id: "src-1",
+    platform: "google",
+    author: "Mike R.",
+    rating: 2,
+    text: "Waited 25 minutes for a simple americano. The place was half empty. Service needs serious improvement.",
+    date: "2026-01-27",
+    sentiment: "negative",
+    replied: false,
+    topics: ["wait time", "service"],
+  },
+  {
+    id: "rev-3",
+    source_id: "src-2",
+    platform: "instagram",
+    author: "foodie_jane",
+    rating: 4,
+    text: "Great ambiance and the pastries are delicious. Wish they had more vegan options though.",
+    date: "2026-01-26",
+    sentiment: "positive",
+    replied: true,
+    reply_text: "Thanks for the feedback! We're working on expanding our vegan menu.",
+    topics: ["ambiance", "pastries", "vegan options"],
+  },
+  {
+    id: "rev-4",
+    source_id: "src-1",
+    platform: "google",
+    author: "Tom K.",
+    rating: 1,
+    text: "Found a hair in my food. Reported to staff and they didn't even apologize. Won't be coming back.",
+    date: "2026-01-25",
+    sentiment: "negative",
+    replied: false,
+    topics: ["hygiene", "service"],
+  },
+  {
+    id: "rev-5",
+    source_id: "src-3",
+    platform: "yelp",
+    author: "Lisa P.",
+    rating: 3,
+    text: "Decent coffee but nothing special. Prices are a bit high for what you get. The location is convenient though.",
+    date: "2026-01-24",
+    sentiment: "neutral",
+    replied: false,
+    topics: ["pricing", "coffee quality", "location"],
+  },
+  {
+    id: "rev-6",
+    source_id: "src-2",
+    platform: "instagram",
+    author: "cafe_hopper",
+    rating: 5,
+    text: "The new seasonal menu is amazing! Pumpkin spice everything. Will definitely be back for more.",
+    date: "2026-01-23",
+    sentiment: "positive",
+    replied: true,
+    reply_text: "So happy you love our seasonal specials! 🎃",
+    topics: ["menu", "seasonal"],
+  },
+  {
+    id: "rev-7",
+    source_id: "src-1",
+    platform: "google",
+    author: "David L.",
+    rating: 2,
+    text: "WiFi is terrible and there aren't enough power outlets. Not a good spot for remote work.",
+    date: "2026-01-22",
+    sentiment: "negative",
+    replied: false,
+    topics: ["wifi", "facilities"],
+  },
+  {
+    id: "rev-8",
+    source_id: "src-1",
+    platform: "google",
+    author: "Emma W.",
+    rating: 4,
+    text: "Lovely little café with a cozy atmosphere. The baristas really know their craft.",
+    date: "2026-01-21",
+    sentiment: "positive",
+    replied: false,
+    topics: ["ambiance", "staff"],
+  },
+]
+
+// ── Clusters ──────────────────────────────────────────
+export const mockClusters: Cluster[] = [
+  {
+    id: "cl-1",
+    name: "Slow Service & Wait Times",
+    sentiment: "negative",
+    mention_percentage: 34,
+    priority: "high",
+    sample_reviews: [
+      "Waited 25 minutes for a simple americano.",
+      "Service is way too slow during peak hours.",
+      "Had to ask three times before my order was taken.",
+    ],
+    strategy: "Implement a queue management system and add staff during peak hours (11am-2pm). Consider a mobile order-ahead feature.",
+    response_template: "We sincerely apologize for the wait. We're actively working on improving our service speed by adding more staff during busy hours. We hope to serve you better next time.",
+    review_count: 42,
+  },
+  {
+    id: "cl-2",
+    name: "Hygiene & Cleanliness Issues",
+    sentiment: "negative",
+    mention_percentage: 18,
+    priority: "high",
+    sample_reviews: [
+      "Found a hair in my food.",
+      "Tables weren't clean when we sat down.",
+      "The restroom was out of soap and paper towels.",
+    ],
+    strategy: "Conduct immediate hygiene audit. Implement hourly cleanliness checklists. Retrain staff on food safety protocols.",
+    response_template: "We take hygiene very seriously and sincerely apologize for this experience. We've conducted an immediate review of our cleanliness protocols and taken corrective action.",
+    review_count: 22,
+  },
+  {
+    id: "cl-3",
+    name: "Excellent Coffee Quality",
+    sentiment: "positive",
+    mention_percentage: 52,
+    priority: "medium",
+    sample_reviews: [
+      "Best latte in town!",
+      "The coffee is always fresh and perfectly brewed.",
+      "Their espresso is on another level.",
+    ],
+    strategy: "Highlight coffee quality in marketing. Feature barista expertise on social media. Consider a coffee subscription program.",
+    response_template: "Thank you so much! Our baristas take great pride in every cup. We're glad you appreciate the quality!",
+    review_count: 65,
+  },
+  {
+    id: "cl-4",
+    name: "Pricing Concerns",
+    sentiment: "negative",
+    mention_percentage: 15,
+    priority: "medium",
+    sample_reviews: [
+      "Prices are a bit high for what you get.",
+      "Would come more often if it were more affordable.",
+      "$7 for a basic coffee is absurd.",
+    ],
+    strategy: "Introduce a loyalty program with rewards. Create value combos. Emphasize quality and sourcing to justify pricing.",
+    response_template: "We appreciate your feedback on pricing. We source premium, ethically-traded beans which reflects in our prices. We're introducing a loyalty program soon for regular customers!",
+    review_count: 19,
+  },
+  {
+    id: "cl-5",
+    name: "Great Atmosphere & Ambiance",
+    sentiment: "positive",
+    mention_percentage: 38,
+    priority: "low",
+    sample_reviews: [
+      "Lovely little café with a cozy atmosphere.",
+      "Great spot to relax and read a book.",
+      "The interior design is so Instagram-worthy.",
+    ],
+    strategy: "Maintain current ambiance. Consider seasonal decor updates. Promote as a workspace/study spot.",
+    response_template: "We're so glad you enjoy the atmosphere! We put a lot of thought into creating a welcoming space for our guests.",
+    review_count: 47,
+  },
+  {
+    id: "cl-6",
+    name: "Limited Vegan/Dietary Options",
+    sentiment: "neutral",
+    mention_percentage: 12,
+    priority: "medium",
+    sample_reviews: [
+      "Wish they had more vegan options.",
+      "Not many choices for gluten-free diets.",
+      "Would love to see plant-based milk alternatives.",
+    ],
+    strategy: "Partner with a vegan bakery. Add oat and almond milk at no extra charge. Create a dedicated dietary options section on the menu.",
+    response_template: "Thank you for this suggestion! We're actively expanding our dietary options. We now offer oat and almond milk, and more vegan treats are coming soon!",
+    review_count: 15,
+  },
+]
+
+// ── Actions ───────────────────────────────────────────
+export const mockActions: Action[] = [
+  {
+    id: "act-1",
+    title: "Reply to 23 unanswered reviews",
+    description: "Prioritize negative reviews first. Use AI-suggested response templates.",
+    priority: "high",
+    completed: false,
+    category: "Engagement",
+  },
+  {
+    id: "act-2",
+    title: "Address slow service complaints",
+    description: "Schedule additional staff during 11am-2pm peak hours starting next week.",
+    priority: "high",
+    completed: false,
+    category: "Operations",
+  },
+  {
+    id: "act-3",
+    title: "Conduct hygiene audit",
+    description: "Implement hourly cleanliness checklist and retrain kitchen staff.",
+    priority: "high",
+    completed: true,
+    category: "Quality",
+  },
+]
+
+// ── Competitors ───────────────────────────────────────
+export const mockCompetitors: Competitor[] = [
+  {
+    id: "comp-1",
+    name: "Brew & Bean Co.",
+    platform: "google",
+    avg_rating: 4.5,
+    review_count: 1102,
+    rating_distribution: [32, 48, 95, 320, 607],
+    pain_points: ["Limited parking", "Expensive menu", "Small portions"],
+    strengths: ["Fast service", "Friendly staff", "Great loyalty program"],
+    trend: "up",
+  },
+  {
+    id: "comp-2",
+    name: "The Daily Grind",
+    platform: "google",
+    avg_rating: 3.8,
+    review_count: 876,
+    rating_distribution: [65, 88, 150, 290, 283],
+    pain_points: ["Inconsistent quality", "Slow WiFi", "Outdated decor"],
+    strengths: ["Affordable prices", "Large portions", "Good location"],
+    trend: "down",
+  },
+  {
+    id: "comp-3",
+    name: "Morning Glory Café",
+    platform: "google",
+    avg_rating: 4.1,
+    review_count: 654,
+    rating_distribution: [28, 42, 98, 210, 276],
+    pain_points: ["Limited hours", "No delivery", "Small menu"],
+    strengths: ["Organic ingredients", "Cozy atmosphere", "Vegan options"],
+    trend: "stable",
+  },
+]
+
+// ── Sentiment Over Time ───────────────────────────────
+export const mockSentimentData: SentimentDataPoint[] = [
+  { date: "Jan 1", positive: 62, negative: 20, neutral: 18 },
+  { date: "Jan 5", positive: 58, negative: 24, neutral: 18 },
+  { date: "Jan 10", positive: 65, negative: 18, neutral: 17 },
+  { date: "Jan 15", positive: 60, negative: 22, neutral: 18 },
+  { date: "Jan 20", positive: 55, negative: 28, neutral: 17 },
+  { date: "Jan 25", positive: 68, negative: 16, neutral: 16 },
+  { date: "Jan 30", positive: 70, negative: 15, neutral: 15 },
+]
+
+// ── Notification Settings ─────────────────────────────
+export const mockNotificationSettings: NotificationSettings = {
+  negative_review_alert: true,
+  weekly_report: true,
+  competitor_change: false,
+  email: true,
+  slack: false,
+}
+
+// ── Weekly Report ─────────────────────────────────────
+export const mockWeeklyReport: WeeklyReport = {
+  period: "Jan 20 – Jan 26, 2026",
+  avg_rating: 4.2,
+  total_reviews: 47,
+  new_reviews: 14,
+  sentiment_shift: 12,
+  sentiment_breakdown: { positive: 28, negative: 11, neutral: 8 },
+  top_issues: ["Slow service during lunch", "WiFi connectivity", "Limited vegan options"],
+  highlights: [
+    "Average rating improved by 0.3 points",
+    "Response rate increased to 78%",
+    "Positive mentions of coffee quality up 15%",
+  ],
+  top_wins: [
+    {
+      title: "30% increase in 5-star reviews",
+      detail: "Total of 12 five‑star reviews, mostly mentioning 'service speed'",
+    },
+    {
+      title: "Response time leader",
+      detail: "Achieved a 45‑minute average response time, your fastest to date",
+    },
+    {
+      title: "New top‑rated service: 'Oil Change'",
+      detail: "Keyword 'Oil Change' became the most praised in reviews",
+    },
+  ],
+}
