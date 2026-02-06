@@ -3,35 +3,11 @@
 import { OnboardingProgress } from "@/components/onboarding-progress"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { TrendingUp, MessageSquareText, Users } from "lucide-react"
+import { ArrowRight, Sparkles, BarChart3, MessageSquare, Users } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
-import { cn } from "@/lib/utils"
-
-const goals = [
-  {
-    id: "improve-rating",
-    icon: TrendingUp,
-    title: "Improve My Rating",
-    description: "Track and improve your average rating across platforms",
-  },
-  {
-    id: "manage-reviews",
-    icon: MessageSquareText,
-    title: "Manage Reviews",
-    description: "Stay on top of reviews and respond faster",
-  },
-  {
-    id: "beat-competitors",
-    icon: Users,
-    title: "Beat Competitors",
-    description: "Understand your competitive positioning",
-  },
-]
 
 export default function OnboardingStep1() {
   const router = useRouter()
-  const [selected, setSelected] = useState<string | null>(null)
 
   return (
     <div className="space-y-8">
@@ -40,37 +16,70 @@ export default function OnboardingStep1() {
       </div>
 
       <div className="text-center">
-        <h1 className="text-xl font-semibold">What&apos;s your main goal?</h1>
+        <h1 className="text-xl font-semibold">Welcome to Reputation Radar</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          This helps us customize your dashboard experience.
+          Let's set up your business in just a few steps.
         </p>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-3">
-        {goals.map((goal) => (
-          <Card
-            key={goal.id}
-            className={cn(
-              "cursor-pointer transition-colors hover:border-primary/50",
-              selected === goal.id && "border-primary ring-1 ring-primary"
-            )}
-            onClick={() => setSelected(goal.id)}
-          >
-            <CardContent className="p-4 text-center">
-              <goal.icon className="mx-auto h-8 w-8 text-primary" />
-              <h3 className="mt-3 text-sm font-medium">{goal.title}</h3>
-              <p className="mt-1 text-xs text-muted-foreground">{goal.description}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      <Card>
+        <CardContent className="p-6">
+          <div className="grid gap-6 md:grid-cols-3">
+            <div className="text-center space-y-2">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                <MessageSquare className="h-6 w-6 text-primary" />
+              </div>
+              <h3 className="font-medium">Collect Reviews</h3>
+              <p className="text-xs text-muted-foreground">
+                Connect Google, Instagram and more to automatically gather reviews.
+              </p>
+            </div>
+            <div className="text-center space-y-2">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                <BarChart3 className="h-6 w-6 text-primary" />
+              </div>
+              <h3 className="font-medium">AI Insights</h3>
+              <p className="text-xs text-muted-foreground">
+                Get AI-powered analysis of what customers love and complain about.
+              </p>
+            </div>
+            <div className="text-center space-y-2">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                <Users className="h-6 w-6 text-primary" />
+              </div>
+              <h3 className="font-medium">Beat Competitors</h3>
+              <p className="text-xs text-muted-foreground">
+                See how you compare to competitors and find opportunities.
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="p-6">
+          <h3 className="text-sm font-medium mb-4">What kind of business do you run?</h3>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {[
+              "Restaurant / Cafe",
+              "Retail Store",
+              "Hotel / Hospitality",
+              "Healthcare / Clinic",
+              "Salon / Beauty",
+              "Professional Services",
+            ].map((type) => (
+              <Button key={type} variant="outline" className="justify-start">
+                {type}
+              </Button>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="flex justify-center">
-        <Button
-          disabled={!selected}
-          onClick={() => router.push("/onboarding/step-2")}
-        >
+        <Button onClick={() => router.push("/onboarding/step-2")}>
           Continue
+          <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
       </div>
     </div>

@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Plus, Clock } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import type { Source } from "@/lib/types"
@@ -24,6 +24,13 @@ export function SourcesClient({ initialSources }: SourcesClientProps) {
   const [loading, setLoading] = useState<{ g?: boolean; i?: boolean }>({})
   const [error, setError] = useState<{ g?: string; i?: string }>({})
   const [flash, setFlash] = useState<string | null>(null)
+
+  // Refresh sources when updated
+  useEffect(() => {
+    const handleRefresh = () => router.refresh()
+    window.addEventListener("source-updated", handleRefresh)
+    return () => window.removeEventListener("source-updated", handleRefresh)
+  }, [router])
 
   const isValidGoogleMapsUrl = (url: string) => {
     try {
@@ -139,7 +146,7 @@ export function SourcesClient({ initialSources }: SourcesClientProps) {
             {flash}
           </div>
         )}
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-2">
           {/* Left: Add New Source */}
           <Card>
             <CardHeader>
@@ -231,7 +238,9 @@ export function SourcesClient({ initialSources }: SourcesClientProps) {
             </h2>
             <div className="space-y-3">
               {initialSources.length > 0 ? (
-                initialSources.map((source) => <SourceCard key={source.id} source={source} />)
+                initialSources.map((source) => (
+                  <SourceCard key={source.id} source={source} />
+                ))
               ) : (
                 <Card>
                   <CardContent className="p-6 text-center">

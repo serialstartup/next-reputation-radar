@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useMemo, useState } from "react"
+import { useMemo, useState, useEffect } from "react"
 import type { Review } from "@/lib/types"
 import { useSearchParams, useRouter } from "next/navigation"
 import { EmptyState } from "@/components/empty-state"
@@ -31,6 +31,13 @@ export function ReviewsClient({ initialReviews }: ReviewsClientProps) {
   const [ratingFilter, setRatingFilter] = useState<string>("all")
   const [replyFilter, setReplyFilter] = useState<string>("all")
   const [sortBy, setSortBy] = useState<string>("newest")
+
+  // Refresh reviews when a reply is submitted
+  useEffect(() => {
+    const handleRefresh = () => router.refresh()
+    window.addEventListener("review-replied", handleRefresh)
+    return () => window.removeEventListener("review-replied", handleRefresh)
+  }, [router])
 
   const filtered = initialReviews.filter((r) => {
     if (platformFilter !== "all" && r.platform !== platformFilter) return false
@@ -85,9 +92,9 @@ export function ReviewsClient({ initialReviews }: ReviewsClientProps) {
         ) : (
           <>
             {/* Filter Bar */}
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
               <Select value={platformFilter} onValueChange={setPlatformFilter}>
-                <SelectTrigger className="w-36 h-8 text-xs">
+                <SelectTrigger className="w-[110px] h-8 text-xs">
                   <SelectValue placeholder="Platform" />
                 </SelectTrigger>
                 <SelectContent>
@@ -99,7 +106,7 @@ export function ReviewsClient({ initialReviews }: ReviewsClientProps) {
               </Select>
 
               <Select value={sentimentFilter} onValueChange={setSentimentFilter}>
-                <SelectTrigger className="w-36 h-8 text-xs">
+                <SelectTrigger className="w-[110px] h-8 text-xs">
                   <SelectValue placeholder="Sentiment" />
                 </SelectTrigger>
                 <SelectContent>
@@ -111,7 +118,7 @@ export function ReviewsClient({ initialReviews }: ReviewsClientProps) {
               </Select>
 
               <Select value={ratingFilter} onValueChange={setRatingFilter}>
-                <SelectTrigger className="w-36 h-8 text-xs">
+                <SelectTrigger className="w-[100px] h-8 text-xs">
                   <SelectValue placeholder="Rating" />
                 </SelectTrigger>
                 <SelectContent>

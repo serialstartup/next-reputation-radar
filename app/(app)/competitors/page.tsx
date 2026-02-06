@@ -1,16 +1,15 @@
-"use client"
-
+import { Suspense } from "react"
 import { AppHeader } from "@/components/app-header"
 import { CompetitorCard } from "@/components/competitor-card"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { Button } from "@/components/ui/button"
 import { TrendingUp, Sparkles } from "lucide-react"
-import { useState } from "react"
 import { mockCompetitors } from "@/lib/mock-data"
+import { CompetitorsSkeleton } from "@/components/review-skeletons"
 
 export default function CompetitorsPage() {
-  const [period, setPeriod] = useState("30d")
+  const competitors = mockCompetitors
 
   return (
     <>
@@ -22,22 +21,23 @@ export default function CompetitorsPage() {
       <div className="p-4 space-y-4">
         {/* Period Selector */}
         <div className="flex items-center justify-between">
-          <ToggleGroup
-            type="single"
-            value={period}
-            onValueChange={(v) => v && setPeriod(v)}
-            size="sm"
-          >
-            <ToggleGroupItem value="30d" className="text-xs">
-              30 Days
-            </ToggleGroupItem>
-            <ToggleGroupItem value="90d" className="text-xs">
-              90 Days
-            </ToggleGroupItem>
-            <ToggleGroupItem value="ytd" className="text-xs">
-              YTD
-            </ToggleGroupItem>
-          </ToggleGroup>
+          <Suspense fallback={<div className="h-8 w-32" />}>
+            <ToggleGroup
+              type="single"
+              defaultValue="30d"
+              size="sm"
+            >
+              <ToggleGroupItem value="30d" className="text-xs">
+                30 Days
+              </ToggleGroupItem>
+              <ToggleGroupItem value="90d" className="text-xs">
+                90 Days
+              </ToggleGroupItem>
+              <ToggleGroupItem value="ytd" className="text-xs">
+                YTD
+              </ToggleGroupItem>
+            </ToggleGroup>
+          </Suspense>
         </div>
 
         {/* Strategic Advantage Banner */}
@@ -55,11 +55,13 @@ export default function CompetitorsPage() {
         </Card>
 
         {/* Competitor Cards */}
-        <div className="grid gap-4 md:grid-cols-3">
-          {mockCompetitors.map((competitor) => (
-            <CompetitorCard key={competitor.id} competitor={competitor} />
-          ))}
-        </div>
+        <Suspense fallback={<CompetitorsSkeleton />}>
+          <div className="grid gap-4 md:grid-cols-3">
+            {competitors.map((competitor) => (
+              <CompetitorCard key={competitor.id} competitor={competitor} />
+            ))}
+          </div>
+        </Suspense>
 
         {/* AI Insight CTA */}
         <Card className="border-dashed">

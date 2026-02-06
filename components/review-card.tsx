@@ -1,8 +1,11 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { StarRating } from "@/components/star-rating"
+import { MessageSquare, Edit2 } from "lucide-react"
 import type { Review } from "@/lib/types"
+import { ReviewReplyDialog } from "@/components/review-reply-dialog"
 
 const platformColors: Record<string, string> = {
   google: "bg-blue-100 text-blue-700",
@@ -48,19 +51,46 @@ export function ReviewCard({ review }: { review: Review }) {
                   ))}
                 </div>
               )}
+              {/* Sentiment badge */}
+              <div className="mt-2">
+                <Badge variant="outline" className={sentimentColors[review.sentiment]}>
+                  {review.sentiment}
+                </Badge>
+              </div>
             </div>
           </div>
-          <Badge variant="outline" className={sentimentColors[review.sentiment]}>
-            {review.sentiment}
-          </Badge>
         </div>
 
+        {/* Existing Reply Display */}
         {review.replied && review.reply_text && (
           <div className="mt-3 ml-11 rounded-md bg-muted/50 p-3">
             <p className="text-xs font-medium text-muted-foreground">Your Reply</p>
             <p className="mt-1 text-xs">{review.reply_text}</p>
           </div>
         )}
+
+        {/* Reply Button */}
+        <div className="mt-3 flex gap-2">
+          <ReviewReplyDialog review={review}>
+            <Button
+              variant={review.replied ? "outline" : "default"}
+              size="sm"
+              className="text-xs"
+            >
+              {review.replied ? (
+                <>
+                  <Edit2 className="mr-1 h-3 w-3" />
+                  Edit Reply
+                </>
+              ) : (
+                <>
+                  <MessageSquare className="mr-1 h-3 w-3" />
+                  Reply
+                </>
+              )}
+            </Button>
+          </ReviewReplyDialog>
+        </div>
       </CardContent>
     </Card>
   )

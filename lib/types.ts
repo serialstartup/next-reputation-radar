@@ -53,7 +53,9 @@ export interface Action {
 export interface Competitor {
   id: string
   name: string
+  url?: string
   platform: Platform
+  status?: "pending" | "active" | "error"
   avg_rating: number
   review_count: number
   rating_distribution: number[] // [1star, 2star, 3star, 4star, 5star]
